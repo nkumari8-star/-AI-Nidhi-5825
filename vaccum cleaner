@@ -1,0 +1,52 @@
+%%bash
+cat << 'EOF' > vacuum_agent.c
+#include 
+#include 
+
+int main() {
+    // Initial states of locations A and B
+    char locA[] = "Dirty";
+    char locB[] = "Dirty";
+    char agent = 'A';
+
+    int cleanedA = 0, cleanedB = 0;
+
+    printf("\nTable 1: Percept - Action - Status\n\n");
+    printf("Step\tPercept\t\tAction\t\tStatus\n");
+    printf("----------------------------------------------\n");
+
+    // Logic for Location A
+    if (strcmp(locA, "Dirty") == 0) {
+        strcpy(locA, "Clean");
+        cleanedA = 100;
+        printf("1\t(A, Dirty)\tSuck\t\tCleaned\n");
+    } else {
+        printf("1\t(A, Clean)\tRight\t\tMove to B\n");
+    }
+
+    // Move to Location B
+    agent = 'B';
+    if (strcmp(locB, "Dirty") == 0) {
+        printf("2\t(B, Dirty)\tNo-op\t\tPending\n");
+
+        // Performing action for B
+        strcpy(locB, "Clean");
+        cleanedB = 100;
+        printf("3\t(B, Dirty)\tSuck\t\tCleaned\n");
+    } else {
+        printf("3\t(B, Clean)\tLeft\t\tMove to A\n");
+    }
+
+    // Returning to A if already clean
+    agent = 'A';
+    printf("4\t(A, Clean)\tNo-op\t\tAlready Clean\n");
+
+    // Performance Table
+    printf("\nTable 2: PERFORMANCE\n\n");
+    printf("Location\tCleaned %%\t\tPending %%\n");
+    printf("------------------------------------------\n");
+    printf("A\t\t%d%%\t\t%d%%\n", cleanedA, 100 - cleanedA);
+    printf("B\t\t%d%%\t\t%d%%\n", cleanedB, 100 - cleanedB);
+
+    return 0;
+}
